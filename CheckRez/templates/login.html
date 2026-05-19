@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}ЧекРез — Вход{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Вход</h1>
+  {% if warning %}<p class="warn-text">{{ warning }}</p>{% endif %}
+  <form method="post" class="form">
+    <label>Email</label>
+    <input type="email" name="email" required />
+    <label>Пароль</label>
+    <input type="password" name="password" required />
+    <button class="btn" type="submit">Войти</button>
+  </form>
+</section>
+{% endblock %}

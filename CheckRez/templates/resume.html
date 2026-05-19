@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}ЧекРез — Проверка резюме{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Проверка резюме</h1>
+  <p>Вставь текст, загрузи PDF/DOCX или дай ссылку на страницу резюме.</p>
+
+  <form method="post" enctype="multipart/form-data" class="form">
+    <label>Текст резюме</label>
+    <textarea name="raw_text" placeholder="Опыт, навыки, прошлые места работы, образование..."></textarea>
+
+    <label>Файл (PDF, DOCX, DOC)</label>
+    <input type="file" name="resume_file" accept=".pdf,.doc,.docx" />
+
+    <label>Ссылка на резюме</label>
+    <input type="url" name="resume_url" placeholder="https://..." />
+
+    <div class="deep-box">
+      <label class="inline-check">
+        <input type="checkbox" name="deep_check" {% if not user %}disabled{% endif %} />
+        Deep-check (глубокий поиск)
+      </label>
+      <p class="deep-help">
+        Глубокий поиск делает расширенный сбор источников, усиливает проверку отзывов/профилей и добавляет больше проверочных критериев.
+        {% if not user %}Доступно только после входа или регистрации.{% endif %}
+      </p>
+    </div>
+
+    <button class="btn" type="submit">Проверить резюме</button>
+  </form>
+</section>
+
+{% include 'result_block.html' %}
+{% endblock %}

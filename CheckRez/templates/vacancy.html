@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}ЧекРез — Проверка вакансии{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Проверка вакансии</h1>
+  <p>Вставь текст вакансии, загрузи файл или ссылку. Сервис проверит компанию и отзывы.</p>
+
+  <form method="post" enctype="multipart/form-data" class="form">
+    <label>Текст вакансии</label>
+    <textarea name="raw_text" placeholder="Описание работы, требования, условия, компания..."></textarea>
+
+    <label>Файл (PDF, DOCX, DOC)</label>
+    <input type="file" name="vacancy_file" accept=".pdf,.doc,.docx" />
+
+    <label>Ссылка на вакансию</label>
+    <input type="url" name="vacancy_url" placeholder="https://..." />
+
+    <div class="deep-box">
+      <label class="inline-check">
+        <input type="checkbox" name="deep_check" {% if not user %}disabled{% endif %} />
+        Deep-check (глубокий поиск)
+      </label>
+      <p class="deep-help">
+        Глубокий поиск усиливает анализ компании: приоритет отзывов сотрудников, больше источников и более строгие фильтры проверки.
+        {% if not user %}Доступно только после входа или регистрации.{% endif %}
+      </p>
+    </div>
+
+    <button class="btn" type="submit">Проверить вакансию</button>
+  </form>
+</section>
+
+{% include 'result_block.html' %}
+{% endblock %}

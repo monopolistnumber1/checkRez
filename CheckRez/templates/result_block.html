@@ -1,0 +1,137 @@
+{% if warnings %}
+<section class="panel warn">
+  <h2>Подсказки</h2>
+  <ul>
+    {% for item in warnings %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if score is not none %}
+<section class="panel result">
+  <h2>Результат проверки</h2>
+  <p><strong>Индекс достоверности: {{ score }}/100</strong> (чем выше число, тем более реалистична анкета/вакансия)</p>
+  <div class="meter">
+    <div class="meter-fill" style="width: {{ score }}%"></div>
+  </div>
+
+  {% if check_id %}
+  <p><a class="btn" href="{{ url_for('export_report', check_id=check_id) }}" target="_blank">Экспорт PDF-отчета</a></p>
+  {% endif %}
+
+  {% if entities %}
+  <div class="chips">
+    {% for e in entities %}
+    <span>{{ e }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="columns">
+    <div>
+      <h3>Что похоже на правду</h3>
+      <ul>
+        {% for t in truths %}
+        <li>{{ t }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div>
+      <h3>Что вызывает сомнения</h3>
+      <ul>
+        {% for d in doubts %}
+        <li>{{ d }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% if categories %}
+  <h3>Детализация риска по фильтрам</h3>
+  <div class="chips">
+    {% for name, value in categories.items() %}
+    <span>{{ name }}: {{ value }}/100</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if source_weights %}
+  <h3>Вес доверия источников</h3>
+  <div class="chips">
+    {% for name, value in source_weights.items() %}
+    <span>{{ name }}: {{ value }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if company_profile %}
+  <h3>Карточка компании (API)</h3>
+  <div class="chips">
+    {% if company_profile.name %}<span>Название: {{ company_profile.name }}</span>{% endif %}
+    {% if company_profile.inn %}<span>ИНН: {{ company_profile.inn }}</span>{% endif %}
+    {% if company_profile.ogrn %}<span>ОГРН: {{ company_profile.ogrn }}</span>{% endif %}
+    {% if company_profile.kpp %}<span>КПП: {{ company_profile.kpp }}</span>{% endif %}
+    {% if company_profile.status %}<span>Статус: {{ company_profile.status }}</span>{% endif %}
+    {% if company_profile.address %}<span>Адрес: {{ company_profile.address }}</span>{% endif %}
+    {% if company_profile.ceo %}<span>Руководитель: {{ company_profile.ceo }}</span>{% endif %}
+    {% if company_profile.source %}<span>Источник: {{ company_profile.source }}</span>{% endif %}
+  </div>
+  {% endif %}
+
+  {% if explain %}
+  <h3>Explainable Score (вклад факторов в достоверность)</h3>
+  <p>Наведи на пункт. Здесь показан вклад в достоверность: <strong>+</strong> повышает достоверность, <strong>-</strong> снижает достоверность.</p>
+  <div class="explain-grid">
+    {% for e in explain %}
+      {% set tip = "Фактор влияет на итоговую достоверность. Положительное значение повышает достоверность, отрицательное снижает." %}
+      {% if 'высокая детализация' in e %}
+        {% set tip = "Критерий: объем и конкретика текста. Чем больше конкретных фактов, тем выше достоверность." %}
+      {% elif 'нет веб-подтверждений' in e %}
+        {% set tip = "Критерий: наличие внешних источников. Если упоминаний нет, достоверность снижается." %}
+      {% elif 'выделены сущности' in e %}
+        {% set tip = "Критерий: распознавание ФИО, компаний, должностей. Это улучшает качество проверки." %}
+      {% elif 'указана оплата' in e %}
+        {% set tip = "Критерий: прозрачность условий. Явная зарплата обычно повышает достоверность." %}
+      {% elif 'отсутствуют контакты' in e %}
+        {% set tip = "Критерий: доступность контактов. Без email/телефона доверие ниже." %}
+      {% elif 'есть хронология' in e %}
+        {% set tip = "Критерий: наличие дат и последовательности опыта/событий." %}
+      {% elif 'API-подтверждения' in e %}
+        {% set tip = "Критерий: структурированная проверка компании через API-источник." %}
+      {% elif 'red flags' in e %}
+        {% set tip = "Критерий: риск-маркеры (предоплата, легкие деньги, сомнительные схемы)." %}
+      {% elif 'контакт через мессенджер' in e %}
+        {% set tip = "Критерий: способ коммуникации. Только мессенджер без официальных контактов снижает достоверность." %}
+      {% endif %}
+      <button type="button" class="explain-pill" data-tip="{{ tip }}" title="{{ tip }}">{{ e }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if checks %}
+  <h3>Что проверить дополнительно</h3>
+  <ul>
+    {% for c in checks %}
+    <li>{{ c }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>Найденные источники</h3>
+  {% if results %}
+  <div class="results">
+    {% for r in results %}
+    <article>
+      <a href="{{ r.link }}" target="_blank" rel="noopener">{{ r.title }}</a>
+      {% if r.source %}<p><strong>Источник:</strong> {{ r.source }}</p>{% endif %}
+      <p>{{ r.snippet }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Источники не найдены или поиск временно недоступен.</p>
+  {% endif %}
+</section>
+{% endif %}

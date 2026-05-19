@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}ЧекРез — История{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>История проверок</h1>
+  <p>История сохраняется только у зарегистрированных пользователей и привязана к вашему аккаунту.</p>
+  <form method="post" action="{{ url_for('clear_history_page') }}">
+    <button class="btn danger" type="submit">Удалить всю историю</button>
+  </form>
+  <div class="results">
+    {% for row in rows %}
+    <article>
+      <p><strong>#{{ row['id'] }}</strong> | {{ row['mode'] }} | достоверность: {{ row['score'] }}/100 | {{ row['created_at'] }}</p>
+      <p>{{ row['source_url'] or 'Без ссылки' }}</p>
+      <p><a href="{{ url_for('export_report', check_id=row['id']) }}" target="_blank">PDF отчет</a></p>
+    </article>
+    {% else %}
+    <p>Пока нет сохраненных проверок.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
